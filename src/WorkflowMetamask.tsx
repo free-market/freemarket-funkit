@@ -1,113 +1,110 @@
-import { useState, useEffect } from "react";
-import detectEthereumProvider from "@metamask/detect-provider";
+import { useState, useEffect } from 'react'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 export const formatBalance = (rawBalance: string) => {
-  const balance = (parseInt(rawBalance) / 1000000000000000000).toFixed(2);
-  return balance;
-};
-
-export const formatChainAsNum = (chainIdHex: string) => {
-  const chainIdNum = parseInt(chainIdHex);
-  return chainIdNum;
-};
-
-interface State {
-  accounts: string[];
-  balance: string;
-  chainId: string;
+  const balance = (parseInt(rawBalance) / 1000000000000000000).toFixed(2)
+  return balance
 }
 
-const MetaMaskDemo = () => {
-  const [hasProvider, setHasProvider] = useState<boolean | null>(null);
-  const [wallet, setWallet] = useState<State | null>(null);
+export const formatChainAsNum = (chainIdHex: string) => {
+  const chainIdNum = parseInt(chainIdHex)
+  return chainIdNum
+}
 
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+interface State {
+  accounts: string[]
+  balance: string
+  chainId: string
+}
+
+const ethereum = window.ethereum as any
+
+const MetaMaskDemo = () => {
+  const [hasProvider, setHasProvider] = useState<boolean | null>(null)
+  const [wallet, setWallet] = useState<State | null>(null)
+
+  const [isConnecting, setIsConnecting] = useState(false)
+  const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     const refreshAccounts = (accounts: any) => {
       if (accounts.length > 0) {
-        updateWallet(accounts);
+        updateWallet(accounts)
       } else {
         // if length 0, user is disconnected
-        const initialState = { accounts: [], balance: "", chainId: "" };
-        setWallet(initialState);
+        const initialState = { accounts: [], balance: '', chainId: '' }
+        setWallet(initialState)
       }
-    };
+    }
 
     const refreshChain = (chainId: string) => {
-      setWallet((wallet) => {
+      setWallet(wallet => {
         if (!wallet) {
-          return null;
+          return null
         }
-        return { ...wallet, chainId };
-      });
-    };
+        return { ...wallet, chainId }
+      })
+    }
 
     const getProvider = async () => {
-      const provider = await detectEthereumProvider({ silent: true });
-      setHasProvider(Boolean(provider));
+      const provider = await detectEthereumProvider({ silent: true })
+      setHasProvider(Boolean(provider))
 
       if (provider) {
-        const accounts = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        refreshAccounts(accounts);
-        window.ethereum.on("accountsChanged", refreshAccounts);
-        window.ethereum.on("chainChanged", refreshChain);
-        window.ethereum.on("chainIdChanged", refreshChain);
+        const accounts = await ethereum.request({ method: 'eth_accounts' })
+        refreshAccounts(accounts)
+        ethereum.on('accountsChanged', refreshAccounts)
+        ethereum.on('chainChanged', refreshChain)
+        ethereum.on('chainIdChanged', refreshChain)
       }
-    };
+    }
 
-    getProvider();
+    getProvider()
 
     return () => {
-      window.ethereum?.removeListener("accountsChanged", refreshAccounts);
-      window.ethereum?.removeListener("chainChanged", refreshChain);
-      window.ethereum?.removeListener("chainIdChanged", refreshChain);
-    };
-  }, []);
+      ethereum?.removeListener('accountsChanged', refreshAccounts)
+      ethereum?.removeListener('chainChanged', refreshChain)
+      ethereum?.removeListener('chainIdChanged', refreshChain)
+    }
+  }, [])
 
   const updateWallet = async (accounts: any) => {
     const balance = formatBalance(
-      await window.ethereum!.request({
-        method: "eth_getBalance",
-        params: [accounts[0], "latest"],
+      await ethereum!.request({
+        method: 'eth_getBalance',
+        params: [accounts[0], 'latest'],
       })
-    );
-    const chainId = await window.ethereum!.request({
-      method: "eth_chainId",
-    });
-    setWallet({ accounts, balance, chainId });
-  };
+    )
+    const chainId = await ethereum!.request({
+      method: 'eth_chainId',
+    })
+    setWallet({ accounts, balance, chainId })
+  }
 
   const handleConnect = async () => {
-    /* Updated */
-    setIsConnecting(true);
-    await window.ethereum
-      .request({
-        /* Updated */ method: "eth_requestAccounts",
+    setIsConnecting(true)
+    try {
+      const accounts = await ethereum.request({
+        method: 'eth_requestAccounts',
       })
-      .then((accounts: []) => {
-        setError(false);
-        updateWallet(accounts);
-      })
-      .catch((err: any) => {
-        setError(true);
-        setErrorMessage(err.message);
-      });
-    setIsConnecting(false);
-  };
+      setError(false)
+      updateWallet(accounts)
+    } catch (err: any) {
+      setError(true)
+      setErrorMessage(err.message)
+    } finally {
+      setIsConnecting(false)
+    }
+  }
 
-  const disableConnect = Boolean(wallet) && isConnecting;
+  const disableConnect = Boolean(wallet) && isConnecting
 
   return (
     <div className="App">
       {!hasProvider && <div>Web3 provider not installed.</div>}
 
-      {window.ethereum?.isMetaMask && wallet && wallet.accounts.length < 1 && (
-        /* Updated */
+      {ethereum?.isMetaMask && wallet && wallet.accounts.length < 1 && (
         <button disabled={disableConnect} onClick={handleConnect}>
           Connect MetaMask
         </button>
@@ -127,7 +124,7 @@ const MetaMaskDemo = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default MetaMaskDemo;
+export default MetaMaskDemo
