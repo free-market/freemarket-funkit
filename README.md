@@ -1,5 +1,19 @@
 # Free Market Arguments UI Example App
 
+## TODO
+
+How to handle uniqueId? (it's not in the code sample, required in typescript)
+
+```
+    void initializeFunAccount({
+      users: [{ userId: convertToValidUserId(connectorAccount) }],
+      index: Math.floor(Math.random() * 10000000),
+      uniqueId: 'foo',
+    }).catch()
+```
+
+When should this be calling funwallet.getDeploymentStatus?
+
 ## Overview
 
 This package shows how to host WorkflowArgumentsForm, a react component that collects argument values for workflows from users.

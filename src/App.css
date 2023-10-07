@@ -108,3 +108,9 @@ textarea:focus {
   padding: 30px 40px;
   border-radius: 30;
 }
+
+pre {
+  font-family: monospace;
+  font-size: 8px;
+  line-height: 9px;
+}
