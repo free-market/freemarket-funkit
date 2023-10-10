@@ -10,6 +10,11 @@ import {
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { shortAddress } from './utils'
 import { useEffectOnce } from './useEffectOnce'
+import { WalletBalances } from '@freemarket/args-ui-react'
+import { type AssetReference } from '@freemarket/client-sdk'
+import { type WalletBalancesProps } from '@freemarket/args-ui-react/build/asset/WalletBalances'
+import { useMetaMask } from 'metamask-react'
+import { assetRefs } from './assetRefs'
 
 const FUN_WALLET_CONFIG = {
   apiKey: 'oh42D6bae967fwsTJBrqgfFZbTcCqvo8ljL1yGdc',
@@ -49,6 +54,7 @@ const ConnectorButton = ({ index }: ConnectorButtonProps) => {
 }
 
 export default function FunWalletStatus() {
+  const { ethereum } = useMetaMask()
   const useConnResult = useConnector({ index: 0, autoConnect: true })
   //   console.log('useConnResult', useConnResult)
   const { account: connectorAccount, active } = useConnResult
@@ -97,15 +103,30 @@ export default function FunWalletStatus() {
     void initializeSingleAuthFunAccount()
   }, [auth, connectorAccount])
 
+  const walletBalancesProps: WalletBalancesProps = {
+    stdProvider: ethereum,
+    address: account ?? '',
+    assetRefs,
+    fungibleTokens: [],
+    refreshToken: 1,
+  }
+
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'min-content min-content', columnGap: 10, whiteSpace: 'nowrap' }}>
         {/* <div>connector address</div>
         <div>{shortAddress(connectorAccount)}</div> */}
 
-        <div>FunWallet address</div>
+        <div>Address:</div>
         <div>{account}</div>
       </div>
+
+      {active && account && (
+        <div style={{}}>
+          <div>Wallet Balances</div>
+          <WalletBalances {...walletBalancesProps} />
+        </div>
+      )}
       {!active && <div>Metamask is not connected. Please connect to Metamask to continue with FunWallet.</div>}
       {/* {active && !account && (
         <div>

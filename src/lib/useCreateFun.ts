@@ -1,22 +1,18 @@
-import { type Auth, type FunWallet as BaseFunWallet, Operation } from '@funkit/core'
 import {
   type Workflow,
-  type EvmTransactionExecutor,
   type Arguments,
-  type TransactionParams,
-  type ExecutionLog,
   type ExecuteWorkflowOptions,
   executeWorkflow as executeWorkflowHelper,
-  assert,
+  getChainFromProvider,
+  Executors,
+  type EvmTransactionExecutor,
 } from '@freemarket/client-sdk'
 import { useCreateFun as baseUseCreateFun, useConnector, usePrimaryAuth } from '@funkit/react'
+import { FunTransactionExecutor } from './FunTransactionExecutor'
+import { type FunWallet } from './FunWallet'
 
 type UseCreateFunReturn = Omit<ReturnType<typeof baseUseCreateFun>, 'funWallet'> & {
-  funWallet: FunWallet | null
-}
-
-export type FunWallet = BaseFunWallet & {
-  executeWorkflow: (workflow: Workflow, args?: Arguments) => Promise<ExecutionLog[]>
+  funWallet: FunWallet
 }
 
 type ExecuteWorkflowFunc = FunWallet['executeWorkflow']
@@ -31,15 +27,18 @@ export function useCreateFun(): UseCreateFunReturn {
 
   // const funWallet: any = ret.funWallet;
   const { funWallet, account } = ret
+  const funWalletAsAny: any = funWallet
 
   if (funWallet && account && provider && !funWallet.executeWorkflow) {
     const executeWorkflow: ExecuteWorkflowFunc = async (workflow: Workflow, args?: Arguments) => {
       const userAddress = await funWallet.getAddress()
+      const chain = await getChainFromProvider(provider as any)
+      const executor: EvmTransactionExecutor = new FunTransactionExecutor(funWallet, auth)
       const executeWorkflowOptions: ExecuteWorkflowOptions = {
         workflow,
         userAddress,
         providers: provider as any,
-        executors: new FunTransactionExecutor(funWallet, auth),
+        executors: executor,
         handler: event => {
           console.log('workflow event:', event)
         },
@@ -51,29 +50,5 @@ export function useCreateFun(): UseCreateFunReturn {
     funWallet.executeWorkflow = executeWorkflow
   }
 
-  //   export async function executeWorkflow(executeWorkflowOptions: ExecuteWorkflowOptions): Promise<void> {
-
   return ret
-}
-
-type Hex = `0x${string}`
-
-class FunTransactionExecutor implements EvmTransactionExecutor {
-  funWallet: FunWallet
-  auth: Auth
-  constructor(funWallet: FunWallet, auth: Auth) {
-    this.funWallet = funWallet
-    this.auth = auth
-  }
-
-  async executeTransaction(params: TransactionParams): Promise<string> {
-    const operation = await this.funWallet.createOperation(this.auth, await this.auth.getAddress(), {
-      to: params.to as Hex,
-      value: params.value as Hex,
-      data: params.data as Hex,
-    })
-    const receipt = await this.funWallet.executeOperation(this.auth, operation)
-    assert(receipt.txId)
-    return receipt.txId
-  }
 }

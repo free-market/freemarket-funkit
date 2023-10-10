@@ -13,6 +13,7 @@ import FunWalletBalances from './FunWalletBalances'
 import { useDemoAppStore } from './store'
 import { useCreateFun } from './lib/FunWallet'
 import WorkflowAssets from './lib/WorkflowAssets'
+import SectionContainer from './SectionContainer'
 const workflow: Workflow = {
   steps: [
     {
@@ -66,28 +67,25 @@ export default function App() {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            padding: 10,
+            // alignItems: 'center',
+            gap: 30,
+            padding: 20,
           }}
         >
-          <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', padding: 20, border: '1px solid #333' }}>
-            <div style={{ color: '#aaa' }}>MetaMask</div>
-            <MetaMaskUI style={{}} />
-          </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', marginTop: 20, padding: 20, border: '1px solid #333' }}>
-            <div style={{ color: '#aaa' }}>FunWallet</div>
+          <SectionContainer title="Meta Mask">
+            <MetaMaskUI />
+          </SectionContainer>
+          <SectionContainer title="Fun">
             <FunWalletStatus />
-          </div>
-          {/* <Fun /> */}
-          {/* <MetaMaskDemo /> */}
-          <div style={{ display: 'flex', gap: 10, alignItems: 'baseline', marginTop: 20, padding: 20, border: '1px solid #333' }}>
+          </SectionContainer>
+          <SectionContainer title="Workflow Parameters">
             <WorkflowArgumentsForm workflow={workflow} onSubmit={handleSubmit} />
-          </div>
+          </SectionContainer>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {/* <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div>FunWallet Balances</div>
           <FunWalletBalances />
-        </div>
+        </div> */}
       </div>
       <div>
         <div>ExecutionLogs</div>
