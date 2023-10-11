@@ -45,7 +45,7 @@ export default function App() {
   const handleSubmit = useCallback(
     async (args: Arguments) => {
       console.log('submit', isWorkflowRunning, args)
-      console.log('&*funWallet*', !!funWallet)
+      console.log('*funWallet*', !!funWallet)
       if (!isWorkflowRunning && funWallet) {
         setWorkflowRunning(true)
         const result = await funWallet.executeWorkflow(workflow, args)
