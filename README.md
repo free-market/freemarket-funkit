@@ -1,79 +1,59 @@
-# Free Market Arguments UI Example App
-
-## TODO
-
-How to handle uniqueId? (it's not in the code sample, required in typescript)
-
-```
-    void initializeFunAccount({
-      users: [{ userId: convertToValidUserId(connectorAccount) }],
-      index: Math.floor(Math.random() * 10000000),
-      uniqueId: 'foo',
-    }).catch()
-```
-
-When should this be calling funwallet.getDeploymentStatus?
+# Free Market Arguments UI for React
 
 ## Overview
 
-This package shows how to host WorkflowArgumentsForm, a react component that collects argument values for workflows from users.
+This package offers a versatile web form component designed for React applications. It facilitates the collection of parameter values for Free Market workflows. These parameters are essential and must be provided by the caller when invoking the workflow.
 
 ## Workflow Parameters Example
 
-Consider the following App, which defined a Free Market workflow and passes it to the WorkflowArgumentsForm:
+Consider the following workflow, which requires a "Start Amount" parameter:
 
 ```ts
-import React from 'react'
-import './dark-mode.css'
-import './App.css'
-
-import { WorkflowArgumentsForm } from '@freemarket/args-ui-react'
 import { Workflow } from '@freemarket/client-sdk'
 
 const workflow: Workflow = {
-  steps: [
-    {
-      type: 'uniswap-exact-in',
-      inputAsset: '{{ startAsset }}',
-      inputAmount: '{{ startAmount }}',
-      outputAsset: {
-        type: 'fungible-token',
-        symbol: 'USDC',
-      },
-      inputAssetSource: 'caller',
-    },
-  ],
   parameters: [
     {
-      name: 'startAsset',
-      label: 'Start Asset',
-      description: 'The asset you want to start with',
-      type: 'asset-ref',
-    },
-    {
       name: 'startAmount',
-      label: 'Start Amount',
-      description: 'The amount of the asset you want to start with',
       type: 'amount',
+      label: 'Start Amount',
     },
   ],
-}
-
-export default function App() {
-  return (
-    <div className="App">
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 30, padding: 40 }}>
-        <h1>Free Market Example</h1>
-        <WorkflowArgumentsForm workflow={workflow} onSubmit={args => console.log(args)} />
-      </div>
-    </div>
-  )
+  steps: [
+    {
+      stepId: 'oneInch',
+      type: 'oneInch',
+      inputAsset: {
+        type: 'native',
+      },
+      inputAssetSource: 'workflow',
+      inputAmount: '{{startAmount}}',
+      outputAsset: {
+        type: 'fungible-token',
+        symbol: 'DAI',
+      },
+      slippageTolerance: '1',
+    },
+  ],
 }
 ```
 
-WorkflowArgumentsForm's job is to render a form based on the `parameters` metadata in the workflow.  
-Once a valid set of form data has been submitted by the user, the onSubmit handler is called with the argument values.
+In this example, startAmount serves as the input amount for the swap step. Before submitting this workflow as a transaction, the UI must prompt users to specify the actual amount.
 
-The above workflow results in this form:
+## Using the Free Market Args Collector UI Component
 
-![Screen Shot](screenshot.png)
+After importing the form:
+
+```ts
+import { WorkflowArgumentsForm } from '@freemarket/react'
+```
+
+Render the form within your app, passing in a workflow and a submit handler:
+
+```tsx
+<WorkflowArgumentsForm workflow={workflow} onSubmit={args => handleArgs(args)} />
+```
+
+This component uses the metadata found in `parameters` in the workflow to dynamically render a form for each required element.
+The form validates user input and displays basic error messages for invalid input. The form is largely unopinionated for UI choices, with reasonable defaults, allowing web developers enough control to make the component
+align with their existing design aesthetics.
