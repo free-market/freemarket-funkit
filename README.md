@@ -1,59 +1,31 @@
-# Free Market Arguments UI for React
+# Free Market Integration Library for FunKit Wallet
 
-## Overview
+This module provides an integration between FunWallet and Free Market.  
 
-This package offers a versatile web form component designed for React applications. It facilitates the collection of parameter values for Free Market workflows. These parameters are essential and must be provided by the caller when invoking the workflow.
+## Installation
 
-## Workflow Parameters Example
-
-Consider the following workflow, which requires a "Start Amount" parameter:
-
-```ts
-import { Workflow } from '@freemarket/client-sdk'
-
-const workflow: Workflow = {
-  parameters: [
-    {
-      name: 'startAmount',
-      type: 'amount',
-      label: 'Start Amount',
-    },
-  ],
-  steps: [
-    {
-      stepId: 'oneInch',
-      type: 'oneInch',
-      inputAsset: {
-        type: 'native',
-      },
-      inputAssetSource: 'workflow',
-      inputAmount: '{{startAmount}}',
-      outputAsset: {
-        type: 'fungible-token',
-        symbol: 'DAI',
-      },
-      slippageTolerance: '1',
-    },
-  ],
-}
+```bash
+npm install  -S @funfair-tech/fun-wallet-integration
 ```
 
-In this example, startAmount serves as the input amount for the swap step. Before submitting this workflow as a transaction, the UI must prompt users to specify the actual amount.
+## Usage
 
-## Using the Free Market Args Collector UI Component
+This library extends the definition of `FunWallet` to include an additional method `executeWorkflow` which enables 
+the wallet to execute Free Market workflows with a single line of code.  
 
-After importing the form:
+To use this library, you must first create a `FunWallet` instance as normal.  Then invoke the helper function `addExecuteWorkflow` to add the `executeWorkflow` method to the `FunWallet` instance:
 
-```ts
-import { WorkflowArgumentsForm } from '@freemarket/react'
+```typescript
+import { addExecuteWorkflow } from '@freemarket/funkit'
+
+// create FunWallet instance as normal
+const baseFunWallet: FunWallet =  /* omitted for brevity */ 
+
+// add the exececuteWorkflow method to it
+const funWallet = addExecuteWorkflow(baseFunWallet)
+
+// now you can use the executeWorkflow method
+const workflow: Workflow =  /* omitted for brevity */
+const args: Arguments = {}
+const result = await funWallet.executeWorkflow(workflow, args)
 ```
-
-Render the form within your app, passing in a workflow and a submit handler:
-
-```tsx
-<WorkflowArgumentsForm workflow={workflow} onSubmit={args => handleArgs(args)} />
-```
-
-This component uses the metadata found in `parameters` in the workflow to dynamically render a form for each required element.
-The form validates user input and displays basic error messages for invalid input. The form is largely unopinionated for UI choices, with reasonable defaults, allowing web developers enough control to make the component
-align with their existing design aesthetics.

@@ -14,13 +14,6 @@
       "runOptions": {
         "runOn": "folderOpen"
       }
-    },
-    {
-      "type": "npm",
-      "script": "lint",
-      "problemMatcher": ["$eslint-stylish"],
-      "label": "npm: lint",
-      "detail": "eslint src"
     }
   ]
 }

@@ -1,7 +1,8 @@
-name: Publish client-sdk to npmjs
+name: Publish a release to npmjs
 on:
   push:
-    tags: freemarket-react-*
+    tags: 
+      - freemarket-funkit-*
 
 jobs:
   publish_client_sdk:

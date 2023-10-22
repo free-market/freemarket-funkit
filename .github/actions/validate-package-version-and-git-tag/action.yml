@@ -1,3 +1,9 @@
+# This action enforces the constraint that the name of the ref conforms to a certain pattern, and includes the package version.
+# The package version in the ref must match the package version in package.json 
+#
+# For example, if package.json has version="1.2.3", the tag must be "<prefix>-1.2.3"
+
+
 name: "Validate Git Tag Against Package Version"
 description: "Validate that a tag prefix matches a pattern and the remainder matches the package version"
 inputs:
