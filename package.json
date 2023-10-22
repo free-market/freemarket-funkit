@@ -1,6 +1,6 @@
 {
   "name": "@freemarket/funkit",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "private": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
