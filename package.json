@@ -11,13 +11,13 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
-    "@freemarket/client-sdk": "workspace:*",
-    "@funkit/core": "*",
-    "rimraf": "^5.0.5"
+    "@freemarket/client-sdk": "^0.3.0",
+    "@funkit/core": "*"
   },
   "devDependencies": {
     "eslint-config-prettier": "^9.0.0",
     "prettier": "^3.0.2",
+    "rimraf": "^5.0.5",
     "typescript": "^4.9.5"
   }
 }
