@@ -5,7 +5,7 @@ This module provides an integration between FunWallet and Free Market.
 ## Installation
 
 ```bash
-npm install  -S @funfair-tech/fun-wallet-integration
+npm install -S @freemarket/funkit
 ```
 
 ## Usage
